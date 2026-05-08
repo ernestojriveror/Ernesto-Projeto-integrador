@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mente Acolhedora</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --cor-fundo: #f0fdf4;
+            --cor-primaria: #059669;
+            --cor-primaria-dark: #047857;
+            --cor-texto: #1e293b;
+            --cor-texto-suave: #64748b;
+            --cor-branco: #ffffff;
+            --cor-urgencia: #dc2626;
+            --tamanho-base: 16px;
+            --sombra: 0 4px 16px rgba(0,0,0,0.08);
+            --raio: 14px;
+        }
+        body.alto-contraste {
+            --cor-fundo: #121212;
+            --cor-primaria: #6ee7b7;
+            --cor-primaria-dark: #34d399;
+            --cor-texto: #ffffff;
+            --cor-texto-suave: #a0aec0;
+            --cor-branco: #1e1e1e;
+            --cor-urgencia: #f87171;
+        }
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            font-family: 'Nunito', sans-serif;
+            background-color: var(--cor-fundo);
+            color: var(--cor-texto);
+            font-size: var(--tamanho-base);
+            padding-bottom: 80px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        /* ── Header ── */
+        header.acessibilidade {
+            background: linear-gradient(135deg, var(--cor-primaria), var(--cor-primaria-dark));
+            color: white;
+            padding: 14px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(5,150,105,0.3);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+        header h1 { margin: 0; font-size: 1.2rem; font-family: 'Lora', serif; font-weight: 600; }
+        .controles { display: flex; gap: 6px; }
+        .controles button {
+            background: rgba(255,255,255,0.15);
+            border: 1px solid rgba(255,255,255,0.4);
+            color: white; padding: 6px 11px; border-radius: 8px;
+            cursor: pointer; font-size: 0.85rem; font-weight: 700; transition: background 0.2s;
+        }
+        .controles button:hover { background: rgba(255,255,255,0.3); }
+
+        /* ── Views ── */
+        .view { display: none; animation: fadeIn 0.3s ease; }
+        .view.ativa { display: block; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ── Início ── */
+        .acolhimento { padding: 24px 20px 16px; text-align: center; }
+        .acolhimento h2 {
+            font-family: 'Lora', serif; font-size: 1.3rem; font-weight: 600;
+            color: var(--cor-texto); margin: 0 0 18px;
+        }
+        .btn-urgencia, .btn-respiro {
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+            width: 100%; padding: 16px; margin-bottom: 12px; border-radius: var(--raio);
+            font-weight: 800; text-decoration: none; border: none; font-size: 1rem;
+            cursor: pointer; font-family: 'Nunito', sans-serif; transition: transform 0.15s, box-shadow 0.15s;
+        }
+        .btn-urgencia:active, .btn-respiro:active { transform: scale(0.98); }
+        .btn-urgencia {
+            background: linear-gradient(135deg, #dc2626, #b91c1c);
+            color: white; box-shadow: 0 4px 14px rgba(220,38,38,0.35);
+        }
+        .btn-respiro {
+            background-color: var(--cor-branco); color: var(--cor-primaria);
+            border: 2px solid var(--cor-primaria); box-shadow: var(--sombra);
+        }
+        .btn-respiro:hover { background-color: var(--cor-primaria); color: white; }
+
+        /* Filtros */
+        .filtros { display: flex; overflow-x: auto; padding: 8px 20px 12px; gap: 10px; scrollbar-width: none; }
+        .filtros::-webkit-scrollbar { display: none; }
+        .filtro-btn {
+            padding: 8px 18px; border-radius: 20px; border: 2px solid var(--cor-primaria);
+            background: var(--cor-branco); color: var(--cor-primaria); cursor: pointer;
+            white-space: nowrap; font-family: 'Nunito', sans-serif; font-weight: 700;
+            font-size: 0.85rem; transition: all 0.2s;
+        }
+        .filtro-btn.ativo { background-color: var(--cor-primaria); color: white; box-shadow: 0 3px 10px rgba(5,150,105,0.3); }
+
+        /* Cards profissionais */
+        .container-resultados { padding: 8px 20px 20px; }
+        .card {
+            background-color: var(--cor-branco); padding: 16px; border-radius: var(--raio);
+            margin-bottom: 14px; box-shadow: var(--sombra); border-left: 4px solid var(--cor-primaria);
+            transition: transform 0.2s, box-shadow 0.2s; animation: fadeIn 0.3s ease;
+        }
+        .card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.1); }
+        .card h3 { margin: 0 0 8px; color: var(--cor-primaria); font-size: 1rem; }
+        .card p { margin: 5px 0; font-size: 0.9rem; color: var(--cor-texto-suave); }
+        .distancia { font-weight: 700; color: var(--cor-urgencia) !important; }
+        .sem-resultados { text-align: center; padding: 40px 20px; color: var(--cor-texto-suave); font-size: 0.95rem; }
+        .sem-resultados i { font-size: 2.5rem; display: block; margin-bottom: 12px; opacity: 0.4; }
+
+        /* Respiro */
+        .escondido { display: none !important; }
+        #overlay-respiro {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: var(--cor-fundo); z-index: 1000;
+            display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px;
+        }
+        .respiro-titulo { font-family: 'Lora', serif; font-size: 1.1rem; color: var(--cor-texto-suave); margin: 0; }
+        #btn-fechar-respiro {
+            position: absolute; top: 20px; right: 20px; padding: 10px 16px;
+            background: var(--cor-branco); border: 2px solid var(--cor-primaria);
+            color: var(--cor-primaria); border-radius: 8px; font-size: 0.9rem;
+            font-weight: 700; cursor: pointer; font-family: 'Nunito', sans-serif; transition: all 0.2s;
+        }
+        #btn-fechar-respiro:hover { background: var(--cor-primaria); color: white; }
+        .circulo-animado {
+            width: 200px; height: 200px; border-radius: 50%;
+            background: linear-gradient(135deg, var(--cor-primaria), var(--cor-primaria-dark));
+            color: white; display: flex; flex-direction: column; align-items: center;
+            justify-content: center; gap: 4px; text-align: center; padding: 20px;
+            box-shadow: 0 8px 30px rgba(5,150,105,0.4); transition: transform 4s ease-in-out;
+        }
+        #circulo-label { font-size: 1.2rem; font-weight: 800; }
+        .circulo-animado.inspirar { transform: scale(1.5); transition: transform 4s ease-in-out; }
+        .circulo-animado.segurar  { transform: scale(1.5); transition: none; }
+        .circulo-animado.expirar  { transform: scale(1);   transition: transform 8s ease-in-out; }
+        .respiro-contador { font-size: 2.2rem; font-weight: 800; line-height: 1; min-height: 1em; }
+
+        /* ── Biblioteca ── */
+        .biblioteca-hero {
+            background: linear-gradient(160deg, var(--cor-primaria-dark) 0%, var(--cor-primaria) 100%);
+            color: white; padding: 28px 20px 24px; text-align: center;
+        }
+        .biblioteca-hero h2 { font-family: 'Lora', serif; font-size: 1.5rem; margin: 0 0 6px; font-weight: 600; }
+        .biblioteca-hero p { margin: 0; font-size: 0.9rem; opacity: 0.85; }
+        .categorias { display: flex; overflow-x: auto; padding: 14px 20px 8px; gap: 10px; scrollbar-width: none; }
+        .categorias::-webkit-scrollbar { display: none; }
+        .cat-btn {
+            display: flex; align-items: center; gap: 6px; padding: 8px 16px;
+            border-radius: 20px; border: 2px solid var(--cor-primaria);
+            background: var(--cor-branco); color: var(--cor-primaria); cursor: pointer;
+            white-space: nowrap; font-family: 'Nunito', sans-serif; font-weight: 700;
+            font-size: 0.85rem; transition: all 0.2s;
+        }
+        .cat-btn.ativo { background: var(--cor-primaria); color: white; box-shadow: 0 3px 10px rgba(5,150,105,0.3); }
+        .artigos-container { padding: 12px 20px 20px; }
+        .artigo-card {
+            background: var(--cor-branco); border-radius: var(--raio); margin-bottom: 16px;
+            box-shadow: var(--sombra); overflow: hidden;
+            transition: transform 0.2s, box-shadow 0.2s; animation: fadeIn 0.35s ease;
+        }
+        .artigo-card:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,0,0,0.1); }
+        .artigo-topo { display: flex; align-items: center; gap: 14px; padding: 16px; cursor: pointer; }
+        .artigo-icone {
+            width: 52px; height: 52px; border-radius: 12px;
+            background: linear-gradient(135deg, var(--cor-primaria), var(--cor-primaria-dark));
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.4rem; flex-shrink: 0; color: white;
+        }
+        .artigo-meta { flex: 1; }
+        .artigo-meta h3 { margin: 0 0 6px; font-size: 1rem; color: var(--cor-texto); line-height: 1.3; }
+        .artigo-tags { display: flex; gap: 6px; flex-wrap: wrap; }
+        .tag { background: #d1fae5; color: var(--cor-primaria-dark); font-size: 0.72rem; font-weight: 700; padding: 2px 8px; border-radius: 20px; }
+        body.alto-contraste .tag { background: #1a3a2e; color: #6ee7b7; }
+        .artigo-resumo {
+            padding: 0 16px; font-size: 0.88rem; color: var(--cor-texto-suave);
+            line-height: 1.6; max-height: 0; overflow: hidden;
+            transition: max-height 0.3s ease, padding 0.3s ease;
+        }
+        .artigo-resumo.aberto { max-height: 200px; padding: 12px 16px 14px; border-top: 1px solid rgba(0,0,0,0.05); }
+        .artigo-rodape {
+            padding: 10px 16px; display: flex; justify-content: space-between; align-items: center;
+            font-size: 0.8rem; color: var(--cor-texto-suave); border-top: 1px solid rgba(0,0,0,0.05);
+        }
+        .leitura { display: flex; align-items: center; gap: 5px; }
+        .btn-ler {
+            background: var(--cor-primaria); color: white; border: none;
+            padding: 6px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: 700;
+            cursor: pointer; font-family: 'Nunito', sans-serif; transition: background 0.2s;
+        }
+        .btn-ler:hover { background: var(--cor-primaria-dark); }
+
+        /* Modal */
+        #modal-artigo {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5); z-index: 2000;
+            display: flex; align-items: flex-end; justify-content: center;
+        }
+        #modal-artigo.escondido { display: none; }
+        .modal-conteudo {
+            background: var(--cor-branco); width: 100%; max-height: 88vh;
+            border-radius: 20px 20px 0 0; overflow-y: auto;
+            padding: 24px 20px 40px; animation: slideUp 0.3s ease;
+        }
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+        .modal-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; }
+        .modal-header h2 {
+            font-family: 'Lora', serif; font-size: 1.25rem; margin: 0;
+            color: var(--cor-primaria); line-height: 1.4; flex: 1; padding-right: 12px;
+        }
+        #btn-fechar-modal {
+            background: var(--cor-fundo); border: none; width: 36px; height: 36px;
+            border-radius: 50%; font-size: 1rem; cursor: pointer; color: var(--cor-texto-suave);
+            flex-shrink: 0; display: flex; align-items: center; justify-content: center;
+        }
+        .modal-body { font-size: 0.95rem; line-height: 1.8; color: var(--cor-texto); }
+        .modal-body h3 { font-family: 'Lora', serif; color: var(--cor-primaria); margin: 20px 0 8px; font-size: 1.05rem; }
+        .modal-body p { margin: 0 0 12px; }
+        .modal-body ul { padding-left: 20px; margin: 0 0 12px; }
+        .modal-body ul li { margin-bottom: 6px; }
+        .modal-body .destaque {
+            background: #d1fae5; border-left: 4px solid var(--cor-primaria);
+            padding: 12px 16px; border-radius: 0 8px 8px 0; margin: 16px 0; font-style: italic;
+        }
+        body.alto-contraste .modal-body .destaque { background: #1a3a2e; }
+
+        /* Menu inferior */
+        .menu-inferior {
+            position: fixed; bottom: 0; width: 100%;
+            background-color: var(--cor-branco); display: flex;
+            justify-content: space-around; padding: 12px 0;
+            box-shadow: 0 -2px 16px rgba(0,0,0,0.08); z-index: 100;
+        }
+        .menu-inferior button {
+            background: none; border: none; color: var(--cor-texto-suave);
+            text-align: center; display: flex; flex-direction: column;
+            align-items: center; gap: 4px; font-size: 0.75rem; font-weight: 700;
+            cursor: pointer; font-family: 'Nunito', sans-serif;
+            transition: color 0.2s; padding: 0 12px;
+        }
+        .menu-inferior button i { font-size: 1.2rem; }
+        .menu-inferior button.ativo,
+        .menu-inferior button:hover { color: var(--cor-primaria); }
+    </style>
+</head>
+<body>
+
+    <header class="acessibilidade">
+        <h1>🌿 Mente Acolhedora</h1>
+        <div class="controles">
+            <button onclick="mudarTamanhoFonte('aumentar')">A+</button>
+            <button onclick="mudarTamanhoFonte('diminuir')">A-</button>
+            <button onclick="alternarContraste()"><i class="fa-solid fa-circle-half-stroke"></i></button>
+        </div>
+    </header>
+
+    <!-- VIEW: INÍCIO -->
+    <div id="view-inicio" class="view ativa">
+        <section class="acolhimento">
+            <h2>Como podemos ajudar agora?</h2>
+            <a href="tel:188" class="btn-urgencia">
+                <i class="fa-solid fa-phone"></i> Ligar CVV (188) — Gratuito
+            </a>
+            <button id="btn-iniciar-respiro" class="btn-respiro">
+                <i class="fa-solid fa-wind"></i> Iniciar Respiro Guiado
+            </button>
+        </section>
+        <nav class="filtros">
+            <button class="filtro-btn ativo" data-idade="todos">Todos</button>
+            <button class="filtro-btn" data-idade="criancas">Crianças</button>
+            <button class="filtro-btn" data-idade="adolescentes">Adolescentes</button>
+            <button class="filtro-btn" data-idade="adultos">Adultos</button>
+        </nav>
+        <main id="lista-profissionais" class="container-resultados"></main>
+    </div>
+
+    <!-- VIEW: BIBLIOTECA -->
+    <div id="view-biblioteca" class="view">
+        <div class="biblioteca-hero">
+            <h2><i class="fa-solid fa-book-open"></i> Biblioteca</h2>
+            <p>Conteúdos para entender e cuidar da sua saúde mental</p>
+        </div>
+        <nav class="categorias">
+            <button class="cat-btn ativo" data-cat="todos">📚 Todos</button>
+            <button class="cat-btn" data-cat="ansiedade">😰 Ansiedade</button>
+            <button class="cat-btn" data-cat="depressao">💙 Depressão</button>
+            <button class="cat-btn" data-cat="criancas">🧒 Crianças</button>
+            <button class="cat-btn" data-cat="autocuidado">🌱 Autocuidado</button>
+            <button class="cat-btn" data-cat="relacionamentos">💬 Relacionamentos</button>
+        </nav>
+        <div class="artigos-container" id="artigos-container"></div>
+    </div>
+
+    <!-- OVERLAY RESPIRO -->
+    <div id="overlay-respiro" class="escondido">
+        <button id="btn-fechar-respiro"><i class="fa-solid fa-xmark"></i> Fechar</button>
+        <p class="respiro-titulo">Técnica 4 - 7 - 8</p>
+        <div class="circulo-animado" id="circulo-texto">
+            <span id="circulo-label">Prepare-se...</span>
+            <span class="respiro-contador" id="respiro-contador"></span>
+        </div>
+    </div>
+
+    <!-- MODAL ARTIGO -->
+    <div id="modal-artigo" class="escondido">
+        <div class="modal-conteudo">
+            <div class="modal-header">
+                <h2 id="modal-titulo"></h2>
+                <button id="btn-fechar-modal"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="modal-body" id="modal-body"></div>
+        </div>
+    </div>
+
+    <!-- MENU -->
+    <nav class="menu-inferior">
+        <button id="nav-inicio" class="ativo" onclick="trocarView('inicio')">
+            <i class="fa-solid fa-house"></i> Início
+        </button>
+        <button id="nav-biblioteca" onclick="trocarView('biblioteca')">
+            <i class="fa-solid fa-book-open"></i> Aprender
+        </button>
+        <button>
+            <i class="fa-solid fa-location-dot"></i> Mapa
+        </button>
+    </nav>
+
+    <script>
+        // ── Navegação ──
+        function trocarView(nome) {
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('ativa'));
+            document.querySelectorAll('.menu-inferior button').forEach(b => b.classList.remove('ativo'));
+            document.getElementById('view-' + nome).classList.add('ativa');
+            document.getElementById('nav-' + nome).classList.add('ativo');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // ── Profissionais ──
+        const profissionais = [
+            { nome: "Dra. Mariana Silva (Neuropediatra)",          foco: "Autismo, TDAH, Atrasos",          publico: "criancas",     distancia: "1.2 km", status: "Aberto agora" },
+            { nome: "Dr. Felipe Costa (Psicólogo Clínico)",        foco: "Ansiedade, Conflitos, Depressão",  publico: "adultos",      distancia: "3.5 km", status: "Aberto agora" },
+            { nome: "CAPS Infantil Regional",                       foco: "Crises Severas, Acolhimento SUS", publico: "adolescentes", distancia: "2.0 km", status: "Até as 17h"   },
+            { nome: "Dra. Camila Torres (Psiquiatra Infanto-Juve)", foco: "Depressão, Ansiedade, Fobias",    publico: "adolescentes", distancia: "4.1 km", status: "Aberto agora" }
+        ];
+
+        function exibirProfissionais(filtro) {
+            const c = document.getElementById('lista-profissionais');
+            c.innerHTML = '';
+            const lista = profissionais.filter(p => filtro === 'todos' || p.publico === filtro);
+            if (!lista.length) {
+                c.innerHTML = `<div class="sem-resultados"><i class="fa-solid fa-user-slash"></i>Nenhum profissional encontrado para este filtro.<br>Tente outra categoria.</div>`;
+                return;
+            }
+            lista.forEach(p => {
+                const d = document.createElement('div');
+                d.className = 'card';
+                d.innerHTML = `<h3>${p.nome}</h3>
+                    <p><strong>Foco:</strong> ${p.foco}</p>
+                    <p class="distancia"><i class="fa-solid fa-location-dot"></i> ${p.distancia} de você</p>
+                    <p><i class="fa-regular fa-clock"></i> ${p.status}</p>`;
+                c.appendChild(d);
+            });
+        }
+        document.querySelectorAll('.filtro-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.filtro-btn').forEach(b => b.classList.remove('ativo'));
+                btn.classList.add('ativo');
+                exibirProfissionais(btn.dataset.idade);
+            });
+        });
+
+        // ── Artigos ──
+        const artigos = [
+            {
+                id:1, titulo:"O que é ansiedade e quando buscar ajuda?",
+                icone:"fa-solid fa-brain", categoria:"ansiedade",
+                tags:["Ansiedade","Saúde Mental"], leitura:"5 min",
+                resumo:"A ansiedade é uma resposta natural do nosso corpo, mas quando excessiva pode prejudicar a vida cotidiana.",
+                conteudo:`<p>A <strong>ansiedade</strong> é uma resposta natural diante de situações de perigo ou incerteza. O problema surge quando essa resposta se torna excessiva ou desproporcional.</p>
+                    <div class="destaque">"A ansiedade é o preço da imaginação — mas não precisa ser o preço da sua felicidade."</div>
+                    <h3>Sintomas comuns</h3>
+                    <ul><li>Coração acelerado e falta de ar</li><li>Pensamentos acelerados ou catastróficos</li><li>Dificuldade de concentração</li><li>Tensão muscular e inquietação</li><li>Insônia ou sono agitado</li></ul>
+                    <h3>Quando buscar ajuda?</h3>
+                    <ul><li>Dura mais de 6 meses de forma intensa</li><li>Impede atividades do dia a dia</li><li>Causa crises de pânico frequentes</li></ul>
+                    <h3>O que ajuda no dia a dia?</h3>
+                    <ul><li><strong>Respiração 4-7-8</strong> — disponível aqui no app!</li><li><strong>Exercício físico regular</strong></li><li><strong>Limitar cafeína e álcool</strong></li><li><strong>Manter rotina</strong> de sono e alimentação</li></ul>
+                    <p>Lembre-se: pedir ajuda é um ato de coragem, não fraqueza. 💚</p>`
+            },
+            {
+                id:2, titulo:"Depressão: muito além da tristeza",
+                icone:"fa-solid fa-cloud-rain", categoria:"depressao",
+                tags:["Depressão","Saúde Mental"], leitura:"6 min",
+                resumo:"Depressão não é frescura nem fraqueza. É uma condição médica séria que tem tratamento eficaz.",
+                conteudo:`<p>A <strong>depressão</strong> afeta mais de 300 milhões de pessoas. Vai muito além de "estar triste" — é uma condição médica que altera a química do cérebro.</p>
+                    <div class="destaque">"Depressão não é escolha. Assim como ninguém escolhe ter diabetes, ninguém escolhe ter depressão."</div>
+                    <h3>Como identificar?</h3>
+                    <ul><li>Tristeza persistente por mais de 2 semanas</li><li>Perda de interesse em atividades prazerosas</li><li>Cansaço extremo, mesmo sem esforço físico</li><li>Dificuldade de concentração</li><li>Sentimentos de inutilidade ou culpa excessiva</li><li>Pensamentos sobre morte ou suicídio</li></ul>
+                    <h3>Mitos e verdades</h3>
+                    <ul><li>❌ <strong>"É falta de força de vontade"</strong> — Falso. É uma doença neurológica.</li><li>❌ <strong>"Quem tem depressão está sempre triste"</strong> — Falso. Existe a depressão sorridente.</li><li>✅ <strong>"Tem tratamento eficaz"</strong> — Verdade!</li></ul>
+                    <p>Em caso de crise: <strong>ligue 188 (CVV)</strong> — gratuito, 24 horas.</p>`
+            },
+            {
+                id:3, titulo:"Saúde mental infantil: sinais de alerta",
+                icone:"fa-solid fa-child", categoria:"criancas",
+                tags:["Crianças","Família","Desenvolvimento"], leitura:"5 min",
+                resumo:"Crianças também sofrem com questões de saúde mental. Aprender a identificar os sinais pode fazer toda a diferença.",
+                conteudo:`<p>Crianças expressam sofrimento emocional de formas diferentes dos adultos. É fundamental reconhecer os <strong>sinais de alerta</strong>.</p>
+                    <div class="destaque">"Uma criança que se sente ouvida tem mais chances de crescer emocionalmente saudável."</div>
+                    <h3>🧒 Crianças (3–10 anos)</h3>
+                    <ul><li>Regressão de comportamento (voltar a fazer xixi na cama)</li><li>Pesadelos frequentes e medo excessivo</li><li>Recusa persistente em ir à escola</li><li>Queixas físicas sem causa médica</li></ul>
+                    <h3>🧑 Pré-adolescentes (11–13 anos)</h3>
+                    <ul><li>Isolamento social e abandono de amizades</li><li>Queda brusca no desempenho escolar</li><li>Comentários sobre querer "sumir"</li></ul>
+                    <h3>O que os pais podem fazer?</h3>
+                    <ul><li>Criar espaço seguro para a criança falar</li><li>Validar as emoções sem minimizar</li><li>Buscar apoio profissional ao perceber sinais persistentes</li></ul>`
+            },
+            {
+                id:4, titulo:"5 práticas de autocuidado para o dia a dia",
+                icone:"fa-solid fa-heart", categoria:"autocuidado",
+                tags:["Autocuidado","Bem-estar","Rotina"], leitura:"4 min",
+                resumo:"Autocuidado não é egoísmo. É a base para que você possa estar bem consigo e com os outros.",
+                conteudo:`<p><strong>Autocuidado</strong> é qualquer ação para cuidar da sua saúde física, mental e emocional. Não precisa ser caro ou complicado.</p>
+                    <div class="destaque">"Você não pode servir de um copo vazio. Cuide-se para poder cuidar."</div>
+                    <h3>1. 🌙 Priorize o sono</h3><p>Adultos precisam de 7–9 horas por noite. Evite telas 1 hora antes de dormir.</p>
+                    <h3>2. 🚶 Movimento diário</h3><p>Caminhar 30 minutos por dia já reduz sintomas de ansiedade e depressão.</p>
+                    <h3>3. 📵 Desintoxicação digital</h3><p>Estabeleça momentos sem celular. O excesso de redes sociais alimenta a ansiedade.</p>
+                    <h3>4. 🧘 Pausas conscientes</h3><p>Reserve 5–10 minutos por dia para respirar — experimente o Respiro Guiado aqui no app!</p>
+                    <h3>5. 💬 Conexões reais</h3><p>Relacionamentos próximos são um dos fatores mais protetores para a saúde mental.</p>`
+            },
+            {
+                id:5, titulo:"Como falar sobre sentimentos com quem você ama",
+                icone:"fa-solid fa-comments", categoria:"relacionamentos",
+                tags:["Comunicação","Relacionamentos","Família"], leitura:"5 min",
+                resumo:"Expressar emoções de forma saudável fortalece vínculos e ajuda na resolução de conflitos.",
+                conteudo:`<p>Falar sobre sentimentos pode ser difícil, mas a comunicação emocional é essencial para relacionamentos saudáveis.</p>
+                    <div class="destaque">"A vulnerabilidade não é fraqueza. É a medida mais precisa de coragem." — Brené Brown</div>
+                    <h3>Comunicação Não-Violenta (CNV)</h3>
+                    <p>Estruture sua fala em 4 partes: <strong>Observação + Sentimento + Necessidade + Pedido</strong>.</p>
+                    <p>Exemplo: <em>"Quando você não responde minhas mensagens, eu me sinto ansioso, porque preciso de segurança. Você poderia me avisar quando estiver ocupado?"</em></p>
+                    <h3>Use "eu" em vez de "você"</h3>
+                    <p>Troque <em>"Você nunca me ouve"</em> por <em>"Eu me sinto ignorado quando..."</em>. Isso reduz a defensividade do outro.</p>
+                    <h3>Escolha o momento certo</h3>
+                    <p>Conversas importantes não devem acontecer quando alguém está cansado ou estressado.</p>`
+            },
+            {
+                id:6, titulo:"TDAH em adultos: o que você precisa saber",
+                icone:"fa-solid fa-bolt", categoria:"ansiedade",
+                tags:["TDAH","Adultos","Diagnóstico"], leitura:"6 min",
+                resumo:"O TDAH não é só coisa de criança. Muitos adultos convivem com ele sem saber — e isso impacta trabalho, relacionamentos e autoestima.",
+                conteudo:`<p>Estima-se que 60–70% dos casos de TDAH persistem na vida adulta. Muitos chegam ao diagnóstico somente aos 30, 40 ou 50 anos.</p>
+                    <div class="destaque">"Não é preguiça, não é falta de inteligência. É o cérebro funcionando de forma diferente."</div>
+                    <h3>Como se manifesta em adultos?</h3>
+                    <ul><li>Dificuldade de concentração em tarefas monótonas</li><li>Procrastinação crônica e problemas com prazos</li><li>Desorganização e perda frequente de objetos</li><li>Impulsividade nas falas e decisões</li><li>Sensação de "nunca atingir o potencial"</li><li>Hiperfoco em assuntos de interesse</li></ul>
+                    <h3>Tratamento</h3>
+                    <ul><li><strong>Medicação</strong> — muito eficaz</li><li><strong>Psicoterapia cognitivo-comportamental</strong></li><li><strong>Ajustes na rotina e ambiente</strong></li></ul>
+                    <p>Com o diagnóstico correto, muitas pessoas relatam transformação significativa na qualidade de vida. 💚</p>`
+            }
+        ];
+
+        function renderizarArtigos(filtro) {
+            const c = document.getElementById('artigos-container');
+            c.innerHTML = '';
+            const lista = artigos.filter(a => filtro === 'todos' || a.categoria === filtro);
+            if (!lista.length) {
+                c.innerHTML = `<div class="sem-resultados"><i class="fa-solid fa-book" style="font-size:2.5rem;display:block;margin-bottom:12px;opacity:0.3"></i>Nenhum artigo nessa categoria ainda.</div>`;
+                return;
+            }
+            lista.forEach(a => {
+                const card = document.createElement('div');
+                card.className = 'artigo-card';
+                card.innerHTML = `
+                    <div class="artigo-topo">
+                        <div class="artigo-icone"><i class="${a.icone}"></i></div>
+                        <div class="artigo-meta">
+                            <h3>${a.titulo}</h3>
+                            <div class="artigo-tags">${a.tags.map(t=>`<span class="tag">${t}</span>`).join('')}</div>
+                        </div>
+                    </div>
+                    <div class="artigo-resumo" id="resumo-${a.id}">${a.resumo}</div>
+                    <div class="artigo-rodape">
+                        <span class="leitura"><i class="fa-regular fa-clock"></i> ${a.leitura}</span>
+                        <button class="btn-ler" onclick="abrirModal(${a.id})">Ler artigo</button>
+                    </div>`;
+                card.querySelector('.artigo-topo').addEventListener('click', () => {
+                    document.getElementById(`resumo-${a.id}`).classList.toggle('aberto');
+                });
+                c.appendChild(card);
+            });
+        }
+
+        document.querySelectorAll('.cat-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('ativo'));
+                btn.classList.add('ativo');
+                renderizarArtigos(btn.dataset.cat);
+            });
+        });
+
+        // ── Modal ──
+        function abrirModal(id) {
+            const a = artigos.find(x => x.id === id);
+            document.getElementById('modal-titulo').textContent = a.titulo;
+            document.getElementById('modal-body').innerHTML = a.conteudo;
+            document.getElementById('modal-artigo').classList.remove('escondido');
+            document.body.style.overflow = 'hidden';
+        }
+        function fecharModal() {
+            document.getElementById('modal-artigo').classList.add('escondido');
+            document.body.style.overflow = '';
+        }
+        document.getElementById('btn-fechar-modal').addEventListener('click', fecharModal);
+        document.getElementById('modal-artigo').addEventListener('click', e => {
+            if (e.target === document.getElementById('modal-artigo')) fecharModal();
+        });
+
+        // ── Respiro ──
+        const btnIniciarRespiro = document.getElementById('btn-iniciar-respiro');
+        const btnFecharRespiro  = document.getElementById('btn-fechar-respiro');
+        const overlayRespiro    = document.getElementById('overlay-respiro');
+        const circuloEl         = document.getElementById('circulo-texto');
+        const circuloLabel      = document.getElementById('circulo-label');
+        const respiroContador   = document.getElementById('respiro-contador');
+        let intervaloRespiro = null, contadorInterval = null;
+
+        btnIniciarRespiro.addEventListener('click', () => {
+            overlayRespiro.classList.remove('escondido');
+            iniciarCiclo();
+        });
+        btnFecharRespiro.addEventListener('click', () => {
+            overlayRespiro.classList.add('escondido');
+            clearInterval(intervaloRespiro); clearInterval(contadorInterval);
+            intervaloRespiro = null;
+            circuloEl.classList.remove('inspirar','segurar','expirar');
+            circuloLabel.textContent = 'Prepare-se...';
+            respiroContador.textContent = '';
+        });
+        function iniciarContador(seg) {
+            clearInterval(contadorInterval);
+            let r = seg;
+            respiroContador.textContent = r;
+            contadorInterval = setInterval(() => {
+                r--;
+                respiroContador.textContent = r > 0 ? r : '';
+                if (r <= 0) clearInterval(contadorInterval);
+            }, 1000);
+        }
+        function ciclo() {
+            circuloLabel.textContent = "Inspire";
+            circuloEl.classList.remove('segurar','expirar');
+            circuloEl.classList.add('inspirar');
+            iniciarContador(4);
+            setTimeout(() => {
+                circuloLabel.textContent = "Segure";
+                circuloEl.classList.remove('inspirar','expirar');
+                circuloEl.classList.add('segurar');
+                iniciarContador(7);
+                setTimeout(() => {
+                    circuloLabel.textContent = "Expire";
+                    circuloEl.classList.remove('inspirar','segurar');
+                    circuloEl.classList.add('expirar');
+                    iniciarContador(8);
+                }, 7000);
+            }, 4000);
+        }
+        function iniciarCiclo() { ciclo(); intervaloRespiro = setInterval(ciclo, 19000); }
+
+        // ── Acessibilidade ──
+        let tamanhoFonteAtual = 16;
+        function mudarTamanhoFonte(acao) {
+            if (acao === 'aumentar' && tamanhoFonteAtual < 24) tamanhoFonteAtual += 2;
+            if (acao === 'diminuir' && tamanhoFonteAtual > 14) tamanhoFonteAtual -= 2;
+            document.documentElement.style.setProperty('--tamanho-base', `${tamanhoFonteAtual}px`);
+        }
+        function alternarContraste() { document.body.classList.toggle('alto-contraste'); }
+
+        // ── Init ──
+        exibirProfissionais('todos');
+        renderizarArtigos('todos');
+    </script>
+</body>
+</html>
